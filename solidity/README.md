@@ -29,3 +29,7 @@ This fund works as following.
 - When user withdraws from the fund there is a 10% fee on the profit the fund made for them. Otherwise there is no fee.
 
 - Bonus: Connect the smart contract you create at least to two Dexes, for example Uniswap or Kyber, so as to get the best price when coverting stable coin to LINK or WETH.
+
+## How to submit your solution
+
+Bundle all your changes into a single git patch file. Zip it and send over to `dev@amun.com` with the subject `"[Solidity task solution] - _your_name_here_"`
