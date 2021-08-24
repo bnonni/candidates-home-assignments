@@ -24,11 +24,11 @@ B. Build a token fund.
 
 This fund works as following.
 
-- When a user deposits USDC or USDT to this fund it gets the user 50% of LINK and 50% of WETH.
+- When a user deposits USDC or USDT, it converts 50% of the amount into LINK and the other 50% into WETH.
 
-- When user withdraws there is 10% performance fee.
+- When user wants to withdraw, it converts the tokens back to USDC or USDT.
 
-- Bonus: Connect the smart contract you create at least to two Dexes, for example Uniswap and Sushi, so as to get the best price when coverting stable coin to LINK or WETH.
+- Bonus: Connect the smart contract you create to at least to two Dexes, for example Uniswap and Sushi, so as to get the best price when coverting stable coin to LINK or WETH.
 
 ## How to submit your solution
 
