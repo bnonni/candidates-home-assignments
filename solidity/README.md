@@ -26,9 +26,9 @@ This fund works as following.
 
 - When a user deposits USDC or USDT to this fund it gets the user 50% of LINK and 50% of WETH.
 
-- When user withdraws from the fund there is a 10% fee on the profit the fund made for them. Otherwise there is no fee.
+- When user withdraws there is 10% performance fee.
 
-- Bonus: Connect the smart contract you create at least to two Dexes, for example Uniswap or Kyber, so as to get the best price when coverting stable coin to LINK or WETH.
+- Bonus: Connect the smart contract you create at least to two Dexes, for example Uniswap and Sushi, so as to get the best price when coverting stable coin to LINK or WETH.
 
 ## How to submit your solution
 
