@@ -10,7 +10,7 @@ This repo uses [hardhat](https://hardhat.org/). Feel free to use it to as templa
 
 1. Fork this repo
 2. Work on one of the tasks
-3. Create a pull request and add Amun engineers as reviewers
+3. Submit your task
 
 Tasks (Choose one):
 
