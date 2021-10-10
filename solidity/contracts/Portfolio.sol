@@ -66,9 +66,6 @@ contract Portfolio {
         _addToken(tokenAddress);
         uint256 tokenId = Tokens[tokenAddress];
         IERC20 token = IERC20(tokenAddress);
-        if(token.allowance(msg.sender, address(this)) < amount) {
-            require(token.approve(address(this), amount), "Allowance Approval Failed! Please Try Again!");
-        }
         require(token.transferFrom(msg.sender, address(this), amount), "Deposit Failed! Please Try Again!");
         Portfolios[msg.sender][tokenId].balance += amount;
         return true;
