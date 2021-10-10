@@ -1,81 +1,118 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Portfolio is Ownable {
+contract Portfolio {
     using Counters for Counters.Counter;
     Counters.Counter TokenCounter;
 
     struct Token {
-        string symbol;
         address tokenAddress;
+        string symbol;
         uint256 balance;
         bool exists;
     }
-    mapping(address => mapping(uint256 => Token)) private PortfolioMap;
-    mapping(string => uint256) TokenTracker;
-    mapping(address => uint256) UserPortfolioSize;
+
+    mapping(address => uint256) PortfolioSizes;
+    mapping(address => uint256) Tokens;
+    mapping(address => mapping(uint256 => Token)) private Portfolios;
 
     function _addToken(address tokenAddress) internal {
         string memory symbol = IERC20Metadata(tokenAddress).symbol();
-        TokenCounter.increment();
         uint256 newTokenId = TokenCounter.current();
-        PortfolioMap[msg.sender][newTokenId] = Token(
-            symbol,
+        TokenCounter.increment();
+        Portfolios[msg.sender][newTokenId] = Token(
             tokenAddress,
+            symbol,
             0,
             true
         );
-        TokenTracker[symbol] = newTokenId;
-        UserPortfolioSize[msg.sender] += 1;
+        Tokens[tokenAddress] = newTokenId;
+        PortfolioSizes[msg.sender] += 1;
     }
+    /**
+        Portfolios: { investorAddress => { tokenAddress => Token() } }
+        E.g.
+        {
+            0x122234: { 0: Token('0x6677', 'SYM', 10, true) },
+            0x992347: { 0: Token('0x6677', 'SYM', 40, true), 1: Token('0x7788', 'MYS', 10, true) }
+            0x679119: { 0: Token('0x6677', 'SYM', 20, true), 1: Token('0x7788', 'MYS', 20, true), Token('0x5558', 'SIM', 20, true) }
+        }
+        Tokens: { tokenAddress => int }
+        E.g.
+        {
+            0x6677: 0,
+            0x7788: 1,
+            0x5558: 2
+        }
+        PortfolioSizes: { investorAddress => int }
+        E.g.
+        {
+            0x122234: 1,
+            0x992347: 2,
+            0x679119: 3
+        }
+     */
 
-    function deposit(
+    function depositTokens(
         uint256 amount,
-        address tokenAddress,
-        string calldata symbol
+        address tokenAddress
     ) external returns (bool) {
+        // check if amount is valid above 0
         require(amount > 0, "Deposit Amount Cannot Be 0!");
-        // check if symbol is valid
-        // require(keccak256(abi.encodePacked(symbol)) != keccak256(abi.encodePacked("")),"Token Symbol Cannot Be Blank!");
-        // check if address exists
-        // require(address(tokenAddress), "");
+        // check if tokenaddress is valid
+        require(keccak256(abi.encodePacked(tokenAddress)) != keccak256(abi.encodePacked("")), "Token Address Required!");
         _addToken(tokenAddress);
-        uint256 tokenId = TokenTracker[symbol];
-        // Token memory tokenMeta = PortfolioMap[msg.sender][tokenId];
-        // require(tokenMeta.exists, "Token Not in Portfolio!");
+        uint256 tokenId = Tokens[tokenAddress];
         IERC20 token = IERC20(tokenAddress);
-        bool success = token.transferFrom(msg.sender, address(this), amount);
-        PortfolioMap[msg.sender][tokenId].balance += amount;
-        return success;
+        // if(token.allowance(msg.sender, address(this)) < amount) {
+        //     require(token.approve(address(this), amount), revert('Allowance Approval Failed! Please Try Again!'));
+        // }
+        // may need to use transferFrom here
+        require(token.transfer(address(this), amount), "Deposit Failed! Please Try Again!");
+        Portfolios[msg.sender][tokenId].balance += amount;
+        return true;
     }
 
-    // function withdraw(string calldata symbol, uint256 amount)
-    //     external
-    //     returns (bool)
-    // {
-    //     require(amount > 0, "Withdraw Amount Cannot Be 0!");
-    //     require(
-    //         keccak256(abi.encodePacked(symbol)) !=
-    //             keccak256(abi.encodePacked("")),
-    //         "Token Symbol Cannot Be Blank!"
-    //     );
-    //     Token memory tokenMeta = PortfolioMap[msg.sender][symbol];
-    //     require(tokenMeta.exists, "Token Not in Portfolio!");
-    //     IERC20 token = tokenMeta.token_;
-    //     bool success = token.transferFrom(address(this), msg.sender, amount);
-    //     return success;
-    // }
+    function withdrawTokens(uint256 amount, address tokenAddress)
+        external
+        returns (bool)
+    {
+        require(amount > 0, "Withdraw Amount Cannot Be 0!");
+        require(keccak256(abi.encodePacked(tokenAddress)) != keccak256(abi.encodePacked("")), "Token Address Required!");
+        uint256 tokenId = Tokens[tokenAddress];
+        Token memory portfolioToken = Portfolios[msg.sender][tokenId];
+        require(portfolioToken.exists, "Token Not in Portfolio!");
+        require(portfolioToken.balance > 0, "No Tokens to Withdraw!");
+        IERC20 token = IERC20(tokenAddress);
+        require(token.transfer(msg.sender, amount), 'Withdraw Failed! Please Try Again!');
+        portfolioToken.balance -= amount;
+        return true;
+    }
 
-    // function balances(string calldata symbol) public returns (string[] memory) {
-    //     // iterate through mapping and return a list of tuples (SYMBOL, BALANCE)
-    //     PortfolioMap[msg.sender];
-    // }
+    function getBalances(address investor) public view returns (Token[] memory) {
+        require(msg.sender == investor, "You Cannot View Another's Portfolio Balances");
+        // get all token balances for a users portfolio
+        uint256 userPortfolioSize = PortfolioSizes[investor];
+        Token[] memory tokens = new Token[](userPortfolioSize);
+        for(uint256 i = 0; i < userPortfolioSize - 1; i++){
+            tokens[i] = Portfolios[investor][i];
+        }
+        return tokens;
+    }
 
-    // function withdrawAll() public returns (bool[] memory) {
-    //     // iterate through mapping, execute a transfer for each token in mapping, add a success or fail to the array, return it
-    // }
+    function withdrawAll(address investor) public returns (bool[] memory) {
+        require(msg.sender == investor, "You Cannot Withdraw Another's Portfolio");
+        uint256 userPortfolioSize = PortfolioSizes[investor];
+        bool[] memory successfulTransfers;
+        for(uint256 i = 0; i < userPortfolioSize - 1; i++){
+            Token memory portfolioToken = Portfolios[investor][i];
+            IERC20 token = IERC20(portfolioToken.tokenAddress);
+            successfulTransfers[i] = token.transfer(investor, portfolioToken.balance);
+        }
+        return successfulTransfers;
+    }
 }
