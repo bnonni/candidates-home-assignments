@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Portfolio {
     using Counters for Counters.Counter;
@@ -37,9 +38,9 @@ contract Portfolio {
         Portfolios: { investorAddress => { tokenAddress => Token() } }
         E.g.
         {
-            0x122234: { 0: Token('0x6677', 'SYM', 10, true) },
-            0x992347: { 0: Token('0x6677', 'SYM', 40, true), 1: Token('0x7788', 'MYS', 10, true) }
-            0x679119: { 0: Token('0x6677', 'SYM', 20, true), 1: Token('0x7788', 'MYS', 20, true), Token('0x5558', 'SIM', 20, true) }
+            0x122234: { 0: Token("0x6677", "SYM", 10, true) },
+            0x992347: { 0: Token("0x6677", "SYM", 40, true), 1: Token("0x7788", "MYS", 10, true) }
+            0x679119: { 0: Token("0x6677", "SYM", 20, true), 1: Token("0x7788", "MYS", 20, true), Token("0x5558", "SIM", 20, true) }
         }
         Tokens: { tokenAddress => int }
         E.g.
@@ -68,9 +69,9 @@ contract Portfolio {
         _addToken(tokenAddress);
         uint256 tokenId = Tokens[tokenAddress];
         IERC20 token = IERC20(tokenAddress);
-        // if(token.allowance(msg.sender, address(this)) < amount) {
-        //     require(token.approve(address(this), amount), revert('Allowance Approval Failed! Please Try Again!'));
-        // }
+        if(token.allowance(msg.sender, address(this)) < amount) {
+            require(token.approve(address(this), amount), "Allowance Approval Failed! Please Try Again!");
+        }
         // may need to use transferFrom here
         require(token.transfer(address(this), amount), "Deposit Failed! Please Try Again!");
         Portfolios[msg.sender][tokenId].balance += amount;
@@ -88,13 +89,13 @@ contract Portfolio {
         require(portfolioToken.exists, "Token Not in Portfolio!");
         require(portfolioToken.balance > 0, "No Tokens to Withdraw!");
         IERC20 token = IERC20(tokenAddress);
-        require(token.transfer(msg.sender, amount), 'Withdraw Failed! Please Try Again!');
+        require(token.transfer(msg.sender, amount), "Withdraw Failed! Please Try Again!");
         portfolioToken.balance -= amount;
         return true;
     }
 
     function getBalances(address investor) public view returns (Token[] memory) {
-        require(msg.sender == investor, "You Cannot View Another's Portfolio Balances");
+        require(msg.sender == investor, "You Can Only View Your Own Portfolio Balances!");
         // get all token balances for a users portfolio
         uint256 userPortfolioSize = PortfolioSizes[investor];
         Token[] memory tokens = new Token[](userPortfolioSize);
@@ -105,7 +106,7 @@ contract Portfolio {
     }
 
     function withdrawAll(address investor) public returns (bool[] memory) {
-        require(msg.sender == investor, "You Cannot Withdraw Another's Portfolio");
+        require(msg.sender == investor, "You Can Only Withdraw Your Own Portfolio!");
         uint256 userPortfolioSize = PortfolioSizes[investor];
         bool[] memory successfulTransfers;
         for(uint256 i = 0; i < userPortfolioSize - 1; i++){

@@ -123,7 +123,7 @@
 			"kind": "user",
 			"methods": {
 				"depositTokens(uint256,address)": {
-					"notice": "Portfolios: { investorAddress => { tokenAddress => Token() } } E.g. { 0x122234: { 0: Token('0x6677', 'SYM', 10, true) }, 0x992347: { 0: Token('0x6677', 'SYM', 40, true), 1: Token('0x7788', 'MYS', 10, true) } 0x679119: { 0: Token('0x6677', 'SYM', 20, true), 1: Token('0x7788', 'MYS', 20, true), Token('0x5558', 'SIM', 20, true) } } Tokens: { tokenAddress => int } E.g. { 0x6677: 0, 0x7788: 1, 0x5558: 2 } PortfolioSizes: { investorAddress => int } E.g. { 0x122234: 1, 0x992347: 2, 0x679119: 3 }"
+					"notice": "Portfolios: { investorAddress => { tokenAddress => Token() } } E.g. { 0x122234: { 0: Token(\"0x6677\", \"SYM\", 10, true) }, 0x992347: { 0: Token(\"0x6677\", \"SYM\", 40, true), 1: Token(\"0x7788\", \"MYS\", 10, true) } 0x679119: { 0: Token(\"0x6677\", \"SYM\", 20, true), 1: Token(\"0x7788\", \"MYS\", 20, true), Token(\"0x5558\", \"SIM\", 20, true) } } Tokens: { tokenAddress => int } E.g. { 0x6677: 0, 0x7788: 1, 0x5558: 2 } PortfolioSizes: { investorAddress => int } E.g. { 0x122234: 1, 0x992347: 2, 0x679119: 3 }"
 				}
 			},
 			"version": 1
@@ -145,6 +145,14 @@
 		"remappings": []
 	},
 	"sources": {
+		"@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+			"keccak256": "0x842ccf9a6cd33e17b7acef8372ca42090755217b358fe0c44c98e951ea549d3a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6cc5f36034a77d105263ae6d8cc18b16260b4a0f6cdb1a26f21ba3670fdd06dd",
+				"dweb:/ipfs/QmdJrJ2LoG546BkfyZPta96BNmaVBfqZoh8kq7PqHuQyPk"
+			]
+		},
 		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
 			"keccak256": "0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a",
 			"license": "MIT",
@@ -170,11 +178,11 @@
 			]
 		},
 		"contracts/Portfolio.sol": {
-			"keccak256": "0xb3e1be340ec0a9f65acc14ec7e7f401619817e3d344c505844aa2d6bd0608be1",
+			"keccak256": "0x90d34740b9758d1606042b8297ff123b5acab5a9a78ac306b00ab40907d15396",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b9a2a09ba05c526bbbf1432ab4afe173300d145a2cd1240c94ae510c9b330827",
-				"dweb:/ipfs/QmXTDyqvwhgpDUcNcB42y9J8Fknjnr3TUXFJS3GtMnsVx8"
+				"bzz-raw://8113f8aac3c2176815be5fc8dfd87da4acc32396c3017dd9b4d2c9ce901e6897",
+				"dweb:/ipfs/QmWWcZPgj1BBjx8xbLXSdfZoJSYh4EB8rq5QcCwuo5LNNY"
 			]
 		}
 	},

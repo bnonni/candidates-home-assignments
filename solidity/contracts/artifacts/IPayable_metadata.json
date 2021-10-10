@@ -1,0 +1,59 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "serviceName",
+						"type": "string"
+					}
+				],
+				"name": "pay",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/TestToken.sol": "IPayable"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/TestToken.sol": {
+			"keccak256": "0xea65568b29f4ad039f83ddcab11510ef4cfdd75f9ef2d0adfece320de2ec058c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://754e8b8437741716f0e12161af2391052b0a8f287ac2c96ef0f58813eea15c24",
+				"dweb:/ipfs/Qmcmy7U6RTGC1wWp22KKU5zb6qYB9Tj5PBQTDvDT3CZus7"
+			]
+		}
+	},
+	"version": 1
+}
