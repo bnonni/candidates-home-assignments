@@ -4,7 +4,6 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Portfolio {
     using Counters for Counters.Counter;
@@ -64,16 +63,13 @@ contract Portfolio {
     ) external returns (bool) {
         // check if amount is valid above 0
         require(amount > 0, "Deposit Amount Cannot Be 0!");
-        // check if tokenaddress is valid
-        require(keccak256(abi.encodePacked(tokenAddress)) != keccak256(abi.encodePacked("")), "Token Address Required!");
         _addToken(tokenAddress);
         uint256 tokenId = Tokens[tokenAddress];
         IERC20 token = IERC20(tokenAddress);
         if(token.allowance(msg.sender, address(this)) < amount) {
             require(token.approve(address(this), amount), "Allowance Approval Failed! Please Try Again!");
         }
-        // may need to use transferFrom here
-        require(token.transfer(address(this), amount), "Deposit Failed! Please Try Again!");
+        require(token.transferFrom(msg.sender, address(this), amount), "Deposit Failed! Please Try Again!");
         Portfolios[msg.sender][tokenId].balance += amount;
         return true;
     }
@@ -83,13 +79,12 @@ contract Portfolio {
         returns (bool)
     {
         require(amount > 0, "Withdraw Amount Cannot Be 0!");
-        require(keccak256(abi.encodePacked(tokenAddress)) != keccak256(abi.encodePacked("")), "Token Address Required!");
         uint256 tokenId = Tokens[tokenAddress];
         Token memory portfolioToken = Portfolios[msg.sender][tokenId];
         require(portfolioToken.exists, "Token Not in Portfolio!");
         require(portfolioToken.balance > 0, "No Tokens to Withdraw!");
         IERC20 token = IERC20(tokenAddress);
-        require(token.transfer(msg.sender, amount), "Withdraw Failed! Please Try Again!");
+        require(token.transferFrom(address(this), msg.sender, amount), "Withdraw Failed! Please Try Again!");
         portfolioToken.balance -= amount;
         return true;
     }
