@@ -13,7 +13,6 @@ contract Portfolio {
         address tokenAddress;
         string symbol;
         uint256 balance;
-        bool exists;
     }
 
     mapping(address => uint256) PortfolioSizes;
@@ -27,8 +26,7 @@ contract Portfolio {
         Portfolios[msg.sender][newTokenId] = Token(
             tokenAddress,
             symbol,
-            0,
-            true
+            0
         );
         Tokens[tokenAddress] = newTokenId;
         PortfolioSizes[msg.sender] += 1;
@@ -61,14 +59,12 @@ contract Portfolio {
         uint256 amount,
         address tokenAddress
     ) external returns (bool) {
-        // check if amount is valid above 0
         require(amount > 0, "Deposit Amount Cannot Be 0!");
         if(Tokens[tokenAddress] == 0){
             _addTokenToPortfolio(tokenAddress);
         }
         uint256 tokenId = Tokens[tokenAddress];
         IERC20 token = IERC20(tokenAddress);
-        // may need to use transferFrom here
         require(token.transferFrom(msg.sender, address(this), amount), "Deposit Failed! Please Try Again!");
         Portfolios[msg.sender][tokenId].balance += amount;
         return true;
@@ -79,18 +75,17 @@ contract Portfolio {
         returns (bool)
     {
         require(amount > 0, "Withdraw Amount Cannot Be 0!");
+        require(Tokens[tokenAddress] != 0, "Token Not In Portfolio!");
         uint256 tokenId = Tokens[tokenAddress];
-        Token memory portfolioToken = Portfolios[msg.sender][tokenId];
-        require(portfolioToken.exists, "Token Not in Portfolio!");
-        require(portfolioToken.balance > 0, "No Tokens to Withdraw!");
+        uint256 balance = Portfolios[msg.sender][tokenId].balance;
+        require(balance > 0, "No Tokens to Withdraw!");
         IERC20 token = IERC20(tokenAddress);
-        require(token.transferFrom(address(this), msg.sender, amount), "Withdraw Failed! Please Try Again!");
-        portfolioToken.balance -= amount;
+        require(token.transfer(msg.sender, amount), "Withdraw Failed! Please Try Again!");
+        Portfolios[msg.sender][tokenId].balance -= amount;
         return true;
     }
 
     function getBalances() public view returns (string[] memory, uint256[] memory) {
-        // get all token balances for a users portfolio
         uint256 userPortfolioSize = PortfolioSizes[msg.sender];
         uint256[] memory balances = new uint256[](userPortfolioSize);
         string[] memory symbols = new string[](userPortfolioSize);
@@ -103,20 +98,29 @@ contract Portfolio {
         return (symbols, balances);
     }
 
-    function withdrawAll() public returns (bool[] memory) {
+    function withdrawAll() public returns (bool) {
         uint256 userPortfolioSize = PortfolioSizes[msg.sender];
-        bool[] memory successfulTransfers;
-        uint256 j = 0;
         for(uint256 i = 1; i <= userPortfolioSize; i++){
-            Token memory portfolioToken = Portfolios[msg.sender][i];
-            IERC20 token = IERC20(portfolioToken.tokenAddress);
-            successfulTransfers[j] = token.transfer(msg.sender, portfolioToken.balance);
-            j++;
+            address tokenAddress = Portfolios[msg.sender][i].tokenAddress;
+            uint256 balance = Portfolios[msg.sender][i].balance;
+            IERC20 token = IERC20(tokenAddress);
+            token.transfer(msg.sender, balance);
+            uint256 tokenId = Tokens[tokenAddress];
+            Portfolios[msg.sender][tokenId].balance -= balance;
         }
-        return successfulTransfers;
+        return true;
     }
     
     function getTokenCount() public view returns (uint256){
         return TokenCounter.current();
+    }
+    
+    function portfolioSize() public view returns (uint256){
+        return PortfolioSizes[msg.sender];
+    }
+    
+    function tokenBalance(address tokenAddress) public view returns (uint256){
+        uint256 tokenId = Tokens[tokenAddress];
+        return Portfolios[msg.sender][tokenId].balance;
     }
 }
