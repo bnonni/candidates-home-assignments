@@ -30,54 +30,38 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "investor",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"name": "getBalances",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "tokenAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "string",
-								"name": "symbol",
-								"type": "string"
-							},
-							{
-								"internalType": "uint256",
-								"name": "balance",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bool",
-								"name": "exists",
-								"type": "bool"
-							}
-						],
-						"internalType": "struct Portfolio.Token[]",
+						"internalType": "string[]",
 						"name": "",
-						"type": "tuple[]"
+						"type": "string[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
 					}
 				],
 				"stateMutability": "view",
 				"type": "function"
 			},
 			{
-				"inputs": [
+				"inputs": [],
+				"name": "getTokenCount",
+				"outputs": [
 					{
-						"internalType": "address",
-						"name": "investor",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "withdrawAll",
 				"outputs": [
 					{
@@ -170,11 +154,11 @@
 			]
 		},
 		"contracts/Portfolio.sol": {
-			"keccak256": "0xa65f570d1a50f11c8c6d4f8887bc586c0674ecd7403f885ccfb05e2dc91cea58",
+			"keccak256": "0x61a5a202fb9530f9fa4e63d8c5d975513e33ee6c6cff52863d607a51c17a2d91",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9ac2486c833fb7a4ab3aa635680e5d5da79175d72624bee8bd43fd5f77b5ac2c",
-				"dweb:/ipfs/Qmb2ezFJhcve5xA5xtqY7jRNjP2cABZaLuje2d32LWGkes"
+				"bzz-raw://469f531814d082e42622a5e86d020055aa43ab0b983695e3c327c2b9bec7fa1f",
+				"dweb:/ipfs/QmQPSQ54xFveqAS5ma8XCCCC1SRiSEF8yCUjtRtixuuVvk"
 			]
 		}
 	},
