@@ -21,7 +21,6 @@ contract Portfolio {
     mapping(address => mapping(uint256 => Token)) private Portfolios;
     
     function _addTokenToPortfolio(address tokenAddress) internal {
-        TokenCounter.increment();
         string memory symbol = IERC20Metadata(tokenAddress).symbol();
         uint256 newTokenId = TokenCounter.current();
         Portfolios[msg.sender][newTokenId] = Token(
@@ -32,6 +31,7 @@ contract Portfolio {
         );
         Tokens[tokenAddress] = newTokenId;
         PortfolioSizes[msg.sender] += 1;
+        TokenCounter.increment();
     }
     /**
         Portfolios: { investorAddress => { tokenAddress => Token() } }
@@ -84,7 +84,7 @@ contract Portfolio {
         require(portfolioToken.exists, "Token Not in Portfolio!");
         require(portfolioToken.balance > 0, "No Tokens to Withdraw!");
         IERC20 token = IERC20(tokenAddress);
-        require(token.transferFrom(address(this), msg.sender, amount), "Withdraw Failed! Please Try Again!");
+        require(token.transfer(msg.sender, amount), "Withdraw Failed! Please Try Again!");
         portfolioToken.balance -= amount;
         return true;
     }
@@ -94,11 +94,9 @@ contract Portfolio {
         uint256 userPortfolioSize = PortfolioSizes[msg.sender];
         uint256[] memory balances = new uint256[](userPortfolioSize);
         string[] memory symbols = new string[](userPortfolioSize);
-        uint256 j = 0;
-        for(uint256 i = 1; i <= userPortfolioSize; i++){
-            symbols[j] = Portfolios[msg.sender][i].symbol;
-            balances[j] = Portfolios[msg.sender][i].balance;
-            j++;
+        for(uint256 i = 0; i < userPortfolioSize; i++){
+            symbols[i] = Portfolios[msg.sender][i].symbol;
+            balances[i] = Portfolios[msg.sender][i].balance;
         }
         return (symbols, balances);
     }
@@ -106,12 +104,10 @@ contract Portfolio {
     function withdrawAll() public returns (bool[] memory) {
         uint256 userPortfolioSize = PortfolioSizes[msg.sender];
         bool[] memory successfulTransfers;
-        uint256 j = 0;
-        for(uint256 i = 1; i <= userPortfolioSize; i++){
+        for(uint256 i = 0; i < userPortfolioSize; i++){
             Token memory portfolioToken = Portfolios[msg.sender][i];
             IERC20 token = IERC20(portfolioToken.tokenAddress);
-            successfulTransfers[j] = token.transfer(msg.sender, portfolioToken.balance);
-            j++;
+            successfulTransfers[i] = token.transfer(msg.sender, portfolioToken.balance);
         }
         return successfulTransfers;
     }

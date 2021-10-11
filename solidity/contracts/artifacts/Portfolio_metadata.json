@@ -154,11 +154,11 @@
 			]
 		},
 		"contracts/Portfolio.sol": {
-			"keccak256": "0x61a5a202fb9530f9fa4e63d8c5d975513e33ee6c6cff52863d607a51c17a2d91",
+			"keccak256": "0x42e2113c42a89f8940810980b53989bc6a3048cd2b30e1e3bd613ce93efc7686",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://469f531814d082e42622a5e86d020055aa43ab0b983695e3c327c2b9bec7fa1f",
-				"dweb:/ipfs/QmQPSQ54xFveqAS5ma8XCCCC1SRiSEF8yCUjtRtixuuVvk"
+				"bzz-raw://412ab551d6f61f007a4a2e61818a08def7b943cf6f01abaaab36d1326f9571d6",
+				"dweb:/ipfs/QmbK5b5AqAc8geR6xsdyk7fzUTV5rFjFt1vMSvsjKzJVhu"
 			]
 		}
 	},
